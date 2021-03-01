@@ -46,8 +46,10 @@ class Robot(pygame.sprite.Sprite):
         self.rect.x = 55
         self.rect.y = 55
         self.angle = 0
+
     def check(self):
-        pass
+        x = self.rect.x
+        
 
     def update(self, side):
         if side == "down":
