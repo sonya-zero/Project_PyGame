@@ -35,29 +35,6 @@ class Board:
                                  (self.left + i * self.cell_size, self.top + j * self.cell_size,
                                   self.cell_size, self.cell_size), 1)
 
-    def check_cell(self, point):
-        A = point[0] < self.left
-        B = point[0] > self.left + (self.width + 1) * self.cell_size
-        C = point[1] < self.top
-        D = point[1] > self.top + (self.height - 1) * self.cell_size
-        if A or B or C or D:
-            print("None")
-        else:
-            cell_x = (point[0] - self.left) // self.cell_size
-            cell_y = (point[1] - self.top) // self.cell_size
-            print((cell_x, cell_y))
-            screen2 = pygame.Surface((self.cell_size - 2, self.cell_size - 2))
-            if self.board[cell_x][cell_y] == 0:
-                color_cell = "white"
-                self.board[cell_x][cell_y] = 1
-            else:
-                color_cell = "black"
-                self.board[cell_x][cell_y] = 0
-            screen2.fill(color_cell)
-            screen.blit(screen2, (self.left + cell_x * self.cell_size + 1,
-                                  self.top + cell_y * self.cell_size + 1))
-
-
 class Robot(pygame.sprite.Sprite):
     image = load_image("robot0.png")
 
