@@ -46,6 +46,8 @@ class Robot(pygame.sprite.Sprite):
         self.rect.x = 55
         self.rect.y = 55
         self.angle = 0
+    def check(self):
+        pass
 
     def update(self, side):
         if side == "down":
@@ -66,13 +68,10 @@ class Robot(pygame.sprite.Sprite):
             print(self.angle)
         elif side == "ff":
             self.rect = self.rect.move(50 * cos(radians(self.angle)), 50 * sin(radians(self.angle)))
-            # self.cor()
             print(self.rect.x, self.rect.y)
 
     def cor(self):
-        self.rect.x += 50 * cos(radians(self.angle))
-        self.rect.y += 50 * sin(radians(self.angle))
-        return (50 * cos(radians((self.angle))), 50 * sin(radians(self.angle)))
+        return (self.rect.x, self.rect.y)
 
 
 # main part
