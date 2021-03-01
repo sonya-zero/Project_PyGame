@@ -87,7 +87,6 @@ if __name__ == "__main__":
     pygame.display.set_caption("help_for_AI")
     running = True
     print(board.board)
-    print(board.board_look)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

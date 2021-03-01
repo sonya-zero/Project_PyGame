@@ -71,7 +71,6 @@ def compilation_board():  # create board
 
 def finish_cell():  # choose finish cell
     var.finish_cell = choice(visited_cells[len(visited_cells) // 4 * 3::])
-    print(var.finish_cell)
 
 
 compilation_board()

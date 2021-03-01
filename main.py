@@ -1,18 +1,16 @@
 import pygame
 import os
 import sys
+import time
 import create_board  # create board happens and finish cell from import in file create_board
-import variable as var
+import variable as var  # import variables
 from math import *
-pass
-
-clock = pygame.time.Clock()
 
 
 def load_image(name):  # load image
     fullname = os.path.join('data', name)
     if not os.path.isfile(fullname):
-        print(f'файл с изображением {fullname} не найден')
+        print(f"Файл с изображением {fullname} не найден")
         sys.exit()
     image = pygame.image.load(fullname)
     return image
@@ -44,6 +42,18 @@ class Board:  # class board
                     screen.blit(text, (text_x, text_y))
                 if self.board_look[j][i]:  # draw opened cells
                     screen.blit(self.board_look[j][i], (x, y))
+
+    def render_finish(self, screen):  # draw finish if you win
+        screen.fill("black")
+        image = load_image("you_win.jpg")
+        image = pygame.transform.scale(image, size)
+        screen.blit(image, (0, 0))
+
+    def render_end(self, screen):  # draw game over if you die
+        screen.fill("black")
+        image = load_image("game_over.png")
+        image = pygame.transform.scale(image, size)
+        screen.blit(image, (0, 0))
 
     def get_cell(self, robot_pos):  # get cell's coord on which clicked
         x_cell, y_cell = (robot_pos[0] - self.left) // self.cell_size, \
@@ -84,11 +94,10 @@ class Board:  # class board
             self.on_click(cell)
 
 
-class Robot(pygame.sprite.Sprite):
+class Robot(pygame.sprite.Sprite):  # class robot
     image = load_image("robot0.png")
 
-    def __init__(self, group):
-        # РќР•РћР‘РҐРћР”РРњРћ РІС‹Р·РІР°С‚СЊ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЂРѕРґРёС‚РµР»СЊСЃРєРѕРіРѕ РєР»Р°СЃСЃР° Sprite
+    def __init__(self, group):  # parameters of robot
         super().__init__(group)
         self.image = Robot.image
         self.rect = self.image.get_rect()
@@ -97,22 +106,22 @@ class Robot(pygame.sprite.Sprite):
         self.angle = 0
         self.start = None
 
-    def check(self):
-        
+    def check(self):  # check choose way on opportunity of move
         x_cell, y_cell = (self.rect.x - var.left) // var.cell_size, (self.rect.y - var.top) // var.cell_size
         cell = var.board[y_cell][x_cell][1::] + [var.board[y_cell][x_cell][0]]
-        #print(cell)
-        #cell2 = cell.insert(0, cell.pop())
-        #print(var.board[y_cell][x_cell])
-        print(cell, self.angle, cell[(self.angle) // 90])
         if cell[(self.angle) // 90]:
-            print('right')
             return True
         else:
-            print('end')
             return False
 
-    def update(self, side):
+    def check_finish(self):  # check finish
+        x_cell, y_cell = (self.rect.x - var.left) // var.cell_size, (self.rect.y - var.top) // var.cell_size
+        if (x_cell, y_cell) == var.finish_cell:
+            return True
+        else:
+            return False
+
+    def update(self, side):  # move of robot
         if side == "down":
             self.image = load_image("robot1.png")
             self.angle = 90
@@ -127,46 +136,59 @@ class Robot(pygame.sprite.Sprite):
             self.angle = 0
         elif side == "ff":
             print(self.rect.x, self.rect.y)
-            #if self.check():
             self.rect.move(self.rect.x, self.rect.y)
-            '''else:
-                return'''
-            
 
-    def cor(self):
+    def cor(self):  # return robot coords
         self.rect.x += 50 * cos(radians(self.angle))
         self.rect.y += 50 * sin(radians(self.angle))
         return int(self.rect.x), int(self.rect.y)
 
-if __name__ == "__main__":
-    pygame.init()
-    board = Board(var.size, var.size)
-    size = width, height = var.size * 50 + board.left * 2, var.size * 50 + board.top * 2
+
+if __name__ == "__main__":  # run the program
+    pygame.init()  # initialize pygame
+    board = Board(var.size, var.size)  # create class board
+    size = width, height = var.size * 50 + board.left * 2, var.size * 50 + board.top * 2  # size window
     screen = pygame.display.set_mode(size)
-    pygame.display.set_caption("help_for_AI")
+    pygame.display.set_caption("help_for_AI")  # name game
     all_sprites = pygame.sprite.Group()
-    running = True
-    robot = Robot(all_sprites)
-    while running:
+    running = True  # condition of run game
+    game_over = False  # lose in game
+    win = False  # win in game
+    robot = Robot(all_sprites)  # create class robot
+    while running:  # cycle of game
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT:  # exit of game
                 running = False
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYDOWN:  # click on buttons
                 if event.key == pygame.K_UP:
-                    all_sprites.update("up")
+                    all_sprites.update("up")  # return robot in up
                 elif event.key == pygame.K_DOWN:
-                    all_sprites.update("down")
+                    all_sprites.update("down")  # return robot in down
                 elif event.key == pygame.K_LEFT:
-                    all_sprites.update("left")
+                    all_sprites.update("left")  # return robot on left
                 elif event.key == pygame.K_RIGHT:
-                    all_sprites.update("right")
-                elif event.key == pygame.K_SPACE:
-                    if robot.check():
-                        all_sprites.update("ff")
-                        board.get_click(robot.cor())
+                    all_sprites.update("right")  # return robot on right
+                elif event.key == pygame.K_SPACE:  # go forvard
+                    if robot.check():  # check on opportunity of move
+                        board.get_click(robot.cor())  # open cell
+                        all_sprites.update("ff")  # move of robot
+                        if robot.check_finish():  # check of finish
+                            win = True
+                    else:
+                        game_over = True
+        # draw board
         screen.fill("black")
         board.render(screen)
         all_sprites.draw(screen)
         pygame.display.flip()
-        clock.tick(100)
-    pygame.quit()
+        if game_over:  # draw board if game over
+            board.render_end(screen)
+            pygame.display.flip()
+            time.sleep(3)
+            running = False
+        if win:  # draw board if you win
+            board.render_finish(screen)
+            pygame.display.flip()
+            time.sleep(3)
+            running = False
+    pygame.quit()  # exit of game
