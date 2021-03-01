@@ -95,6 +95,22 @@ class Robot(pygame.sprite.Sprite):
         self.rect.x = 40
         self.rect.y = 40
         self.angle = 0
+        self.start = None
+
+    def check(self):
+        
+        x_cell, y_cell = (self.rect.x - var.left) // var.cell_size, (self.rect.y - var.top) // var.cell_size
+        cell = var.board[y_cell][x_cell][1::] + [var.board[y_cell][x_cell][0]]
+        #print(cell)
+        #cell2 = cell.insert(0, cell.pop())
+        #print(var.board[y_cell][x_cell])
+        print(cell, self.angle, cell[(self.angle) // 90])
+        if cell[(self.angle) // 90]:
+            print('right')
+            return True
+        else:
+            print('end')
+            return False
 
     def update(self, side):
         if side == "down":
@@ -110,7 +126,12 @@ class Robot(pygame.sprite.Sprite):
             self.image = load_image("robot0.png")
             self.angle = 0
         elif side == "ff":
+            print(self.rect.x, self.rect.y)
+            #if self.check():
             self.rect.move(self.rect.x, self.rect.y)
+            '''else:
+                return'''
+            
 
     def cor(self):
         self.rect.x += 50 * cos(radians(self.angle))
@@ -140,8 +161,9 @@ if __name__ == "__main__":
                 elif event.key == pygame.K_RIGHT:
                     all_sprites.update("right")
                 elif event.key == pygame.K_SPACE:
-                    board.get_click(robot.cor())
-                    all_sprites.update("ff")
+                    if robot.check():
+                        all_sprites.update("ff")
+                        board.get_click(robot.cor())
         screen.fill("black")
         board.render(screen)
         all_sprites.draw(screen)
