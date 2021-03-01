@@ -4,4 +4,4 @@ left = 30  # left indent
 top = 30  # top indent
 cell_size = 50  # size of cell
 start_cell = (0, 0)  # start cell
-finish_cell = (0, 0)  #finish cell
+finish_cell = (0, 0)  # finish cell

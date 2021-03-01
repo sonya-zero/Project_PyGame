@@ -2,7 +2,7 @@ import pygame
 import os
 import sys
 import time
-import create_board  # create board happens and finish cell from import in file create_board
+import create_board  # create board & finish cell in file create_board
 import variable as var  # import variables
 from math import *
 
@@ -34,9 +34,11 @@ class Board:  # class board
             for j in range(self.height):
                 x = self.left + self.cell_size * i
                 y = self.top + self.cell_size * j
-                pygame.draw.rect(screen, "white", (x, y, self.cell_size, self.cell_size), 1)
+                pygame.draw.rect(screen, "white", (
+                    x, y, self.cell_size, self.cell_size), 1)
                 if (i, j) == var.finish_cell:  # draw finish cell
-                    pygame.draw.rect(screen, "green", (x, y, self.cell_size, self.cell_size), 0)
+                    pygame.draw.rect(screen, "green", (
+                        x, y, self.cell_size, self.cell_size), 0)
                     text_x = x + self.cell_size // 2 - text.get_width() // 2
                     text_y = y + self.cell_size // 2 - text.get_height() // 2
                     screen.blit(text, (text_x, text_y))
@@ -58,7 +60,8 @@ class Board:  # class board
     def get_cell(self, robot_pos):  # get cell's coord on which clicked
         x_cell, y_cell = (robot_pos[0] - self.left) // self.cell_size, \
                          (robot_pos[1] - self.top) // self.cell_size
-        if x_cell < 0 or x_cell >= self.width or y_cell < 0 or y_cell >= self.height:
+        if x_cell < 0 or x_cell >= self.width or\
+                y_cell < 0 or y_cell >= self.height:
             return None
         return x_cell, y_cell
 
@@ -77,7 +80,8 @@ class Board:  # class board
             else:
                 image = load_image("rotate.png")
                 try:
-                    image = pygame.transform.rotate(image, -90 * (cell.index('11') + 1))
+                    image = pygame.transform.rotate(
+                        image, -90 * (cell.index('11') + 1))
                 except ValueError:
                     pass
         elif sum(cell) == 1:
@@ -107,15 +111,17 @@ class Robot(pygame.sprite.Sprite):  # class robot
         self.start = None
 
     def check(self):  # check choose way on opportunity of move
-        x_cell, y_cell = (self.rect.x - var.left) // var.cell_size, (self.rect.y - var.top) // var.cell_size
+        x_cell, y_cell = (self.rect.x - var.left) // var.cell_size, \
+                         (self.rect.y - var.top) // var.cell_size
         cell = var.board[y_cell][x_cell][1::] + [var.board[y_cell][x_cell][0]]
-        if cell[(self.angle) // 90]:
+        if cell[self.angle // 90]:
             return True
         else:
             return False
 
     def check_finish(self):  # check finish
-        x_cell, y_cell = (self.rect.x - var.left) // var.cell_size, (self.rect.y - var.top) // var.cell_size
+        x_cell, y_cell = (self.rect.x - var.left) // var.cell_size, \
+                         (self.rect.y - var.top) // var.cell_size
         if (x_cell, y_cell) == var.finish_cell:
             return True
         else:
@@ -135,7 +141,6 @@ class Robot(pygame.sprite.Sprite):  # class robot
             self.image = load_image("robot0.png")
             self.angle = 0
         elif side == "ff":
-            print(self.rect.x, self.rect.y)
             self.rect.move(self.rect.x, self.rect.y)
 
     def cor(self):  # return robot coords
@@ -146,8 +151,15 @@ class Robot(pygame.sprite.Sprite):  # class robot
 
 if __name__ == "__main__":  # run the program
     pygame.init()  # initialize pygame
+    # add sounds effects
+    sound_break = pygame.mixer.Sound("sounds/break.ogg")
+    suond_game_over = pygame.mixer.Sound("sounds/game_over.ogg")
+    sound_win = pygame.mixer.Sound("sounds/win.ogg")
+    sound_minions = pygame.mixer.Sound("sounds/minions.ogg")
     board = Board(var.size, var.size)  # create class board
-    size = width, height = var.size * 50 + board.left * 2, var.size * 50 + board.top * 2  # size window
+    size = width, height = \
+        var.size * 50 + board.left * 2, \
+        var.size * 50 + board.top * 2  # size window
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption("help_for_AI")  # name game
     all_sprites = pygame.sprite.Group()
@@ -184,11 +196,17 @@ if __name__ == "__main__":  # run the program
         if game_over:  # draw board if game over
             board.render_end(screen)
             pygame.display.flip()
-            time.sleep(3)
+            sound_break.play()
+            time.sleep(2)
+            suond_game_over.play()
+            time.sleep(2)
             running = False
         if win:  # draw board if you win
             board.render_finish(screen)
             pygame.display.flip()
+            sound_win.play()
             time.sleep(3)
+            sound_minions.play()
+            time.sleep(2)
             running = False
     pygame.quit()  # exit of game
